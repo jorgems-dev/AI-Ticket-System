@@ -5,7 +5,7 @@ from database import Base
 
 from enum import Enum as PyEnum
 
-class RolUsuario(str, PyEnum):
+class Rol(str, PyEnum):
     ADMIN = "ADMIN"
     EMPLEADO = "EMPLEADO"
     TECNICO = "TECNICO"
@@ -13,12 +13,12 @@ class RolUsuario(str, PyEnum):
 class Usuario(Base):
     __tablename__ = "usuarios"
 
-    _id_usuario = Column(Integer, primary_key=True, index=True)
+    id_usuario = Column(Integer, primary_key=True, index=True)
     nombre = Column(String(100), nullable=False)
     correo = Column(String(255), unique=True, nullable=False)
     password = Column(String(255), nullable=False)
     fecha_creacion_user = Column(DateTime(timezone=True), server_default=func.now())
-    rol = Column(Enum(RolUsuario), nullable=False)
+    rol = Column(Enum(Rol), nullable=False)
 
-    tickets_creados = relationship("Ticket", back_populates="creador", foreign_keys="Ticket._id_creador")
-    tickets_asignados = relationship("Ticket", back_populates="tecnico", foreign_keys="Ticket._id_tecnico")
+    tickets_creados = relationship("Ticket", back_populates="creador", foreign_keys="Ticket.id_creador")
+    tickets_asignados = relationship("Ticket", back_populates="tecnico", foreign_keys="Ticket.id_tecnico")

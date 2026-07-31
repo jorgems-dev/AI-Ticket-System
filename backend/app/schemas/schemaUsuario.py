@@ -14,3 +14,7 @@ class UserResponse(UserBase):
 
     class Config:
         from_attributes = True
+
+class UserLogin(UserBase):
+    correo: EmailStr
+    password: str
