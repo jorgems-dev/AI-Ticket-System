@@ -2,10 +2,12 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
-from schemas.schemaTicket import TicketResponse, TicketCreate, TicketUpdate, Message
-from models.ticket import Ticket
+from app.schemas.schemaTicket import TicketResponse, TicketCreate, TicketUpdate
+from app.schemas.schemaComun import Message
+from app.models.ticket import Ticket
 
 router = APIRouter(prefix = "/tickets", tags = ["Tickets"])
+
 # Crear ticket nuevo
 @router.post("/", response_model = TicketResponse, status_code = status.HTTP_201_CREATED)
 async def crear_ticket(ticket: TicketCreate, db: Session = Depends(get_db)):
@@ -17,11 +19,11 @@ async def crear_ticket(ticket: TicketCreate, db: Session = Depends(get_db)):
 
     return ticket_nuevo
 
-@router.get("/tickets", response_model = list[TicketResponse])
+@router.get("/", response_model = list[TicketResponse])
 async def get_list_ticket(db: Session = Depends(get_db)):
     return db.query(Ticket).all()
 
-@router.get("/tickets/{id_ticket}", response_model = TicketResponse)
+@router.get("/{id_ticket}", response_model = TicketResponse)
 async def get_ticket(id_ticket: int ,db: Session = Depends(get_db)):
     ticket = db.get(Ticket, id_ticket)
 
@@ -31,7 +33,7 @@ async def get_ticket(id_ticket: int ,db: Session = Depends(get_db)):
     return ticket
 
 # Obtener ticket por su ID
-@router.put("/tickets/{id_ticket}", response_model = TicketResponse)
+@router.put("/{id_ticket}", response_model = TicketResponse)
 async def update_ticket(id_ticket: int, datos: TicketUpdate, db: Session = Depends(get_db)):
     ticket = db.get(Ticket, id_ticket)
 
@@ -47,7 +49,7 @@ async def update_ticket(id_ticket: int, datos: TicketUpdate, db: Session = Depen
     return ticket
 
 # Borrar ticket por su ID
-@router.delete("/tickets/{id_ticket}", response_model = Message)
+@router.delete("/{id_ticket}", response_model = Message)
 async def delete_ticket(id_ticket: int, db: Session = Depends(get_db)):
     ticket = db.get(Ticket, id_ticket)
 

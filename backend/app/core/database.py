@@ -11,6 +11,8 @@ db_host = os.getenv("DB_HOST")
 db_port = os.getenv("DB_PORT")
 db_name = os.getenv("DB_NAME")
 
+required = [db_user, db_password, db_host, db_port, db_name]
+
 SERVER_URL = f"mysql+pymysql://{db_user}:{db_password}@{db_host}:{db_port}"
 
 DATABASE_URL = f"mysql+pymysql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
@@ -19,12 +21,15 @@ def create_database():
     server_engine = create_engine(SERVER_URL)
 
     with server_engine.connect() as conn:
-        conn.execute(text(f"CREATE DATABASE IF NOT EXISTS {db_name}"))
+        conn.execute(text(f"CREATE DATABASE IF NOT EXISTS `{db_name}`"))
         conn.commit()
 
-engine = create_engine(DATABASE_URL)
+    # Cierre del engine
+    server_engine.dispose()
 
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+ENGINE = create_engine(DATABASE_URL, pool_pre_ping = True, echo = False)
+
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=ENGINE)
 
 Base = declarative_base()
 

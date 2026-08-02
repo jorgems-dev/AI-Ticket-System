@@ -1,20 +1,28 @@
 from datetime import datetime
 from pydantic import BaseModel, EmailStr
+from app.models.usuario import Rol
 
-class UserBase(BaseModel):
+class UsuarioBase(BaseModel):
     nombre: str
-    email: EmailStr
+    correo: EmailStr
 
-class UserCreate(UserBase):
+class UsuarioCreate(UsuarioBase):
     password: str
 
-class UserResponse(UserBase):
-    id: int
+class UsuarioResponse(UsuarioBase):
+    id_usuario: int
+    rol: Rol
     fecha_creacion_user: datetime
 
     class Config:
         from_attributes = True
 
-class UserLogin(UserBase):
+class UsuarioLogin(BaseModel):
     correo: EmailStr
     password: str
+
+class UsuarioUpdate(BaseModel):
+    nombre: str | None = None
+    correo: EmailStr | None = None
+    password: str | None = None
+
