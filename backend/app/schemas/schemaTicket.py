@@ -19,4 +19,11 @@ class TicketResponse(TicketBase):
 
     class Config:
         from_attributes = True    
-    
+
+class TicketUpdate(BaseModel):
+    titulo: str | None = None
+    descripcion: str | None = None 
+    prioridad: Prioridad | None = None 
+
+class Message(BaseModel):
+    mensaje: str
