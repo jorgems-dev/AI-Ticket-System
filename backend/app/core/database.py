@@ -1,37 +1,34 @@
-import os
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, declarative_base
-from dotenv import load_dotenv
+from app.core.config import DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME
 
-load_dotenv()
+required = [DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME]
 
-db_user = os.getenv("DB_USER")
-db_password = os.getenv("DB_PASSWORD")
-db_host = os.getenv("DB_HOST")
-db_port = os.getenv("DB_PORT")
-db_name = os.getenv("DB_NAME")
 
-required = [db_user, db_password, db_host, db_port, db_name]
+def comprobacion_required():
+    if not all(required):
+        raise ValueError("Faltan variables de entorno de la base de datos. ")
+    
+SERVER_URL = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}"
 
-SERVER_URL = f"mysql+pymysql://{db_user}:{db_password}@{db_host}:{db_port}"
+DATABASE_URL = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
-DATABASE_URL = f"mysql+pymysql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
+engine = create_engine(DATABASE_URL, pool_pre_ping = True, echo = False)
 
-def create_database():
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind = engine)
+
+Base = declarative_base()
+
+def create_database() -> None:
     server_engine = create_engine(SERVER_URL)
 
     with server_engine.connect() as conn:
-        conn.execute(text(f"CREATE DATABASE IF NOT EXISTS `{db_name}`"))
+        conn.execute(text(f"CREATE DATABASE IF NOT EXISTS `{DB_NAME}`"))
         conn.commit()
 
     # Cierre del engine
     server_engine.dispose()
 
-ENGINE = create_engine(DATABASE_URL, pool_pre_ping = True, echo = False)
-
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=ENGINE)
-
-Base = declarative_base()
 
 def get_db():
     db = SessionLocal()
